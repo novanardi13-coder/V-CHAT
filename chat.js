@@ -24,8 +24,14 @@ function logout() {
 }
 
 function openChat() {
-  currentTarget = document.getElementById("targetNumber").value.trim();
-  if (!currentTarget) return;
+  const input = document.getElementById("targetNumber");
+  currentTarget = input.value.trim();
+  
+  if (!currentTarget) {
+    alert("Masukkan nomor tujuan");
+    return;
+  }
+  
   loadChat();
 }
 
@@ -35,14 +41,12 @@ async function loadChat() {
   const { data, error } = await db
     .from("chats")
     .select("*")
-    .or(
-      `and(from_number.eq.${myNumber},to_number.eq.${currentTarget}),
-       and(from_number.eq.${currentTarget},to_number.eq.${myNumber})`
-    )
+    .in("from_number", [myNumber, currentTarget])
+    .in("to_number", [myNumber, currentTarget])
     .order("created_at", { ascending: true });
   
   if (error) {
-    console.error("Load chat error:", error);
+    console.error("LOAD CHAT ERROR:", error);
     return;
   }
   
@@ -55,11 +59,19 @@ async function loadChat() {
     div.innerText = m.message;
     chat.appendChild(div);
   });
+  
+  chat.scrollTop = chat.scrollHeight;
 }
 
 async function sendMessage() {
-  const text = document.getElementById("messageInput").value.trim();
-  if (!text || !currentTarget) return;
+  const input = document.getElementById("messageInput");
+  const text = input.value.trim();
+  
+  if (!text) return;
+  if (!currentTarget) {
+    alert("Pilih lawan chat dulu");
+    return;
+  }
   
   const { error } = await db.from("chats").insert({
     from_number: myNumber,
@@ -68,13 +80,15 @@ async function sendMessage() {
   });
   
   if (error) {
-    console.error("Send error:", error);
+    console.error("SEND ERROR:", error);
     alert("Gagal kirim pesan");
     return;
   }
   
-  document.getElementById("messageInput").value = "";
+  input.value = "";
   loadChat();
 }
 
-setInterval(loadChat, 2000);
+setInterval(() => {
+  if (currentTarget) loadChat();
+}, 2000);
