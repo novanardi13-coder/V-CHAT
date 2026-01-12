@@ -9,10 +9,66 @@ body {
   margin: auto;
 }
 
-input, button {
+.H {
+  text-align: center;
+}
+
+.box {
+  background-color: #666;
+  width: 90%;
+  height: 600px;
+}
+
+input {
+  width: 97%;
+  height: 30px;
+  padding: 3px;
+  margin: 5px 0;
+  color: white;
+}
+
+.I {
+  width: 97%;
+  height: 30px;
+  padding: 3px;
+  margin: 10px 0;
+  color: white;
+}
+
+.wm {
+  font-size: 14px;
+}
+
+.C {
+  color: #999;
+}
+
+.b {
+  margin-top: 20px;
   width: 100%;
-  padding: 8px;
-  margin: 4px 0;
+  height: 25px;
+  padding: 3px;
+  background: white;
+  border-radius: 10px;
+  transition: ease 0.70s all;
+}
+
+.b:hover {
+  background: lawngreen;
+  transform: scale(1.05);
+}
+
+.B {
+  width: 100%;
+  height: 25px;
+  padding: 3px;
+}
+
+.BB {
+  background: #222;
+  margin-top: 8%;
+  padding: 10px;
+  border-radius: 10px;
 }
 
 #chat {
@@ -20,7 +76,8 @@ input, button {
   height: 260px;
   overflow-y: auto;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 10px;
+  border: 0.5px solid white;
 }
 
 .msg.me { color: #38bdf8; }
@@ -29,4 +86,24 @@ input, button {
 #myNumber {
   display: inline-block;
   white-space: nowrap;
+}
+
+.nds {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 10px 0;
+}
+
+.L1 {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.TT {
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
