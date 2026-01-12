@@ -2,28 +2,31 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>V-CHAT | Chat</title>
-
+  <title>V-CHAT</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="style.css">
   <script src="chat.js" defer></script>
 </head>
 <body>
 
-<div class="app">
-  <p>Nomor kamu: <b id="myNumber"></b></p>
-  <button onclick="logout()">Keluar</button>
-
-  <hr>
-
-  <input id="targetNumber" placeholder="Nomor tujuan">
-  <button onclick="openChat()">Mulai Chat</button>
-
-  <div id="chat"></div>
-
-  <input id="messageInput" placeholder="Ketik pesan">
-  <button onclick="sendMessage()">Kirim</button>
+<div class="nds">
+  <img src="V-CHAT.png" alt="Logo" class="L1">
+  <span class="TT">V-CHAT</span>
 </div>
+
+<p>Nomor kamu: <b id="myNumber"></b></p>
+<p>Nama: <b id="myName"></b></p>
+<button onclick="logout()" class="B">🚪 Keluar</button>
+
+<hr>
+
+<input id="targetNumber" placeholder="Nomor tujuan">
+<button onclick="openChat()" class="B">Mulai Chat</button>
+
+<div id="chat">tips : Masukkan nomor tujuan lalu tekan "Mulai Chat" selanjutnya tinggal kirim pesan</div>
+
+<input id="messageInput" placeholder="Pesan">
+<button onclick="sendMessage()" class="B">Kirim</button>
 
 </body>
 </html>
