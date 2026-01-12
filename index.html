@@ -2,20 +2,24 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>V-CHAT | Login</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V-CHAT</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="style.css">
   <script src="login.js" defer></script>
 </head>
 <body>
-
-<div class="app">
-  <h2>🔐 V-CHAT</h2>
-
-  <input id="number" placeholder="Nomor kamu">
-  <input id="pin" type="password" placeholder="PIN">
-  <button onclick="login()">Masuk</button>
+  
+<div class="nds">
+  <img src="V-CHAT.png" alt="Logo" class="L1">
+  <span class="TT">V-CHAT</span>
+</div>
+<div class="BB">
+<h2 class="H">LOGIN | V-CHAT</h2>
+<input id="number" placeholder="Masukkan ID" class="I">
+<input id="pin" type="password" placeholder="Masukkan PIN" class="I">
+<button onclick="login()" class="b">Masuk</button>
+<p class="wm">Need number or forgot the password? just <a href="https://wa.me/62895801650060" class="C">Click me</a></p>
 </div>
 
 </body>
