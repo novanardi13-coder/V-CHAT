@@ -19,16 +19,12 @@ async function loadOwners() {
     .from("numbers")
     .select("number, owner");
 
-  if (error) {
-    console.error("Owner error:", error);
-    return;
+  if (!error && data) {
+    data.forEach(n => {
+      ownerMap[n.number] = n.owner;
+    });
   }
-
-  data.forEach(n => {
-    ownerMap[n.number] = n.owner;
-  });
 }
-
 loadOwners();
 
 function logout() {
@@ -37,8 +33,10 @@ function logout() {
 }
 
 function openChat() {
-  currentTarget = document.getElementById("targetNumber").value.trim();
-  if (!currentTarget) return;
+  const target = document.getElementById("targetNumber").value.trim();
+  if (!target) return alert("Masukkan nomor tujuan");
+
+  currentTarget = target;
   loadChat();
 }
 
@@ -55,14 +53,14 @@ async function loadChat() {
     .order("created_at", { ascending: true });
 
   if (error) {
-    console.error("Load chat error:", error);
+    console.error("LOAD CHAT ERROR:", error);
     return;
   }
 
   const chat = document.getElementById("chat");
   chat.innerHTML = "";
 
-  data.forEach(m => {
+  (data || []).forEach(m => {
     const div = document.createElement("div");
     div.className = m.from_number === myNumber ? "msg me" : "msg other";
 
@@ -82,7 +80,8 @@ async function sendMessage() {
   const input = document.getElementById("messageInput");
   const text = input.value.trim();
 
-  if (!text || !currentTarget) return;
+  if (!text) return;
+  if (!currentTarget) return alert("Pilih lawan chat dulu");
 
   const { error } = await db.from("chats").insert({
     from_number: myNumber,
@@ -91,8 +90,8 @@ async function sendMessage() {
   });
 
   if (error) {
-    alert("Gagal kirim pesan");
-    console.error(error);
+    console.error("SEND ERROR:", error);
+    alert("Gagal mengirim pesan");
     return;
   }
 
