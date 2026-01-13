@@ -1,6 +1,6 @@
 body {
   background: #020617;
-  color: black;
+  color: white;
   font-family: Arial;
 }
 
@@ -24,7 +24,6 @@ input {
   height: 30px;
   padding: 3px;
   margin: 5px 0;
-  color: white;
 }
 
 .I {
