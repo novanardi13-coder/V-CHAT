@@ -1,15 +1,14 @@
 const SUPABASE_URL = "https://qxxmxzxipoodeobehcoy.supabase.co";
 const SUPABASE_KEY = "sb_publishable_53x04KOXjY6Eg9tfhAPQWg_MSfaBSPV";
-
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const myNumber = localStorage.getItem("myNumber");
-const myName   = localStorage.getItem("myName");
+const myName = localStorage.getItem("myName");
 
 if (!myNumber) location.href = "index.html";
 
 document.getElementById("myNumber").innerText = myNumber;
-document.getElementById("myName").innerText   = myName;
+document.getElementById("myName").innerText = myName;
 
 let currentTarget = null;
 let ownerMap = {};
@@ -18,12 +17,15 @@ async function loadOwners() {
   const { data, error } = await db
     .from("numbers")
     .select("number, owner");
-
-  if (!error && data) {
-    data.forEach(n => {
-      ownerMap[n.number] = n.owner;
-    });
+  
+  if (error) {
+    console.error("Owner error:", error);
+    return;
   }
+  
+  data.forEach(n => {
+    ownerMap[n.number] = n.owner;
+  });
 }
 loadOwners();
 
@@ -33,68 +35,73 @@ function logout() {
 }
 
 function openChat() {
-  const target = document.getElementById("targetNumber").value.trim();
-  if (!target) return alert("Masukkan nomor tujuan");
-
-  currentTarget = target;
+  const input = document.getElementById("targetNumber");
+  currentTarget = input.value.trim();
+  
+  if (!currentTarget) {
+    alert("Masukkan nomor tujuan");
+    return;
+  }
+  
   loadChat();
 }
 
 async function loadChat() {
   if (!currentTarget) return;
-
+  
   const { data, error } = await db
     .from("chats")
     .select("*")
-    .or(
-      `and(from_number.eq.${myNumber},to_number.eq.${currentTarget}),
-       and(from_number.eq.${currentTarget},to_number.eq.${myNumber})`
-    )
+    .or(`from_number.eq."${myNumber}",to_number.eq."${myNumber}"`)
     .order("created_at", { ascending: true });
-
+  
   if (error) {
-    console.error("LOAD CHAT ERROR:", error);
+    console.error("Load chat error:", error);
     return;
   }
-
+  
   const chat = document.getElementById("chat");
   chat.innerHTML = "";
-
-  (data || []).forEach(m => {
-    const div = document.createElement("div");
-    div.className = m.from_number === myNumber ? "msg me" : "msg other";
-
-    const sender =
-      m.from_number === myNumber
-        ? "Aku"
-        : ownerMap[m.from_number] || "User";
-
-    div.innerText = `${sender}: ${m.message}`;
-    chat.appendChild(div);
-  });
-
+  
+  data
+    .filter(m =>
+      (m.from_number === myNumber && m.to_number === currentTarget) ||
+      (m.from_number === currentTarget && m.to_number === myNumber)
+    )
+    .forEach(m => {
+      const div = document.createElement("div");
+      div.className = m.from_number === myNumber ? "msg me" : "msg other";
+      
+      const sender =
+        m.from_number === myNumber ?
+        "Aku" :
+        ownerMap[m.from_number] || m.from_number;
+      
+      div.textContent = `${sender}: ${m.message}`;
+      chat.appendChild(div);
+    });
+  
   chat.scrollTop = chat.scrollHeight;
 }
 
 async function sendMessage() {
   const input = document.getElementById("messageInput");
   const text = input.value.trim();
-
-  if (!text) return;
-  if (!currentTarget) return alert("Pilih lawan chat dulu");
-
+  
+  if (!text || !currentTarget) return;
+  
   const { error } = await db.from("chats").insert({
     from_number: myNumber,
     to_number: currentTarget,
     message: text
   });
-
+  
   if (error) {
-    console.error("SEND ERROR:", error);
-    alert("Gagal mengirim pesan");
+    alert("Gagal kirim pesan");
+    console.error(error);
     return;
   }
-
+  
   input.value = "";
   loadChat();
 }
