@@ -34,6 +34,10 @@ function logout() {
   location.href = "index.html";
 }
 
+function DN() {
+  location.href = "DAFNOM.html";
+}
+
 function openChat() {
   const input = document.getElementById("targetNumber");
   currentTarget = input.value.trim();
