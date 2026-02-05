@@ -22,13 +22,26 @@
 
 <hr>
 
-<input id="targetNumber" placeholder="Nomor tujuan">
-<button onclick="openChat()" class="B">Mulai Chat</button>
+<div class="add-contact">
+  <input id="newContactNumber" placeholder="Masukkan nomor baru..." class="in">
+  <button onclick="saveContact()" class="B">Simpan Kontak</button>
+</div>
 
-<div id="chat">tips : Masukkan nomor tujuan lalu tekan "Mulai Chat" lalu selanjutnya masukkan pesan lalu tekan "kirim pesan"</div>
+<hr>
 
-<input id="messageInput" placeholder="Pesan">
-<button onclick="sendMessage()" class="B">Kirim</button>
+<div id="contact-list" class="contact-box">
+  <h3>Kontak Saya</h3>
+  <div id="myContacts">Belum ada kontak tersimpan</div>
+</div>
+
+<hr>
+
+<div id="chat-window" style="display:none;">
+    <p>Chatting dengan: <b id="chattingWith"></b></p>
+    <div id="chat"></div>
+    <input id="messageInput" placeholder="Pesan">
+    <button onclick="sendMessage()" class="B2">Kirim</button>
+</div>
 
 </body>
 </html>
