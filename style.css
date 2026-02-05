@@ -1,7 +1,9 @@
 body {
   background: #020617;
   color: white;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 10px;
 }
 
 .app {
@@ -9,123 +11,173 @@ body {
   margin: auto;
 }
 
-.H {
-  text-align: center;
-}
-
-.box {
-  background-color: #666;
-  width: 90%;
-  height: 600px;
-}
-
 input {
-  width: 97%;
-  height: 30px;
-  padding: 3px;
+  width: 100%;
+  height: 35px;
+  padding: 8px;
   margin: 5px 0;
-}
-
-.I {
-  width: 97%;
-  height: 30px;
-  padding: 3px;
-  margin: 10px 0;
+  background: #1e293b;
+  border: 1px solid #334155;
   color: white;
+  border-radius: 8px;
 }
 
-.wm {
-  font-size: 14px;
+.B0, .B1 {
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+  background: linear-gradient(to bottom, white, silver);
+  width: 46.5vw;
+  padding: 3px;
+  border-radius: 10px;
 }
 
-.C {
-  color: #999;
+.B {
+  width: 95vw;
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+  background: linear-gradient(to bottom, white, silver);
+  padding: 3px;
+  border-radius: 10px;
+}
+
+.B2 {
+  width: 86vw;
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+  background: linear-gradient(to bottom, white, silver);
+  padding: 3px;
+  border-radius: 10px;
 }
 
 .b {
   margin-top: 20px;
   width: 100%;
-  height: 25px;
-  padding: 3px;
+  height: 35px;
   background: white;
   border-radius: 10px;
-  transition: ease 0.70s all;
+  transition: all 0.3s ease;
 }
 
 .b:hover {
   background: lawngreen;
-  transform: scale(1.05);
-}
-
-.B {
-  width: 100%;
-  height: 30px;
-  padding: 3px;
-  border-radius: 10px;
-}
-
-.B0 {
-  width: 50%;
-  height: 30px;
-  padding: 3px;
-  border-radius: 10px;
-}
-
-.B1 {
-  width: 48%;
-  height: 30px;
-  padding: 3px;
-  border-radius: 10px;
-}
-
-.BB {
-  background: #222;
-  margin-top: 8%;
-  padding: 10px;
-  border-radius: 10px;
+  transform: scale(1.02);
 }
 
 #chat {
   background: #0f172a;
-  height: 260px;
+  height: 350px;
   overflow-y: auto;
-  padding: 10px;
+  padding: 15px;
   border-radius: 10px;
-  border: 0.5px solid white;
+  border: 1px solid #334155;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.msg.me { color: #38bdf8; }
-.msg.other { color: #4ade80; }
-
-#myNumber {
-  display: inline-block;
-  white-space: nowrap;
+.msg {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 15px;
+  font-size: 14px;
+  line-height: 1.5;
+  
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap; 
 }
 
+/* Pesan Saya (Kanan) */
+.msg.me {
+  align-self: flex-end;
+  background-color: #0369a1; /* Biru gelap */
+  color: white;
+  border-bottom-right-radius: 2px;
+}
+
+/* Pesan Teman (Kiri) */
+.msg.other {
+  align-self: flex-start;
+  background-color: #1e293b; /* Abu gelap */
+  color: #4ade80; /* Teks hijau */
+  border-bottom-left-radius: 2px;
+}
+
+/* --- KONTAK & WINDOW --- */
+.contact-item {
+    padding: 12px;
+    background: #1e293b;
+    border-left: 4px solid #4ade80;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: 0.2s;
+}
+
+.contact-item:hover {
+    background: #334155;
+}
+
+#chat-window {
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 15px;
+    background: #111827;
+    border: 1px solid #334155;
+}
+
+/* --- HEADER & BRANDING --- */
 .nds {
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin: 10px 0;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .L1 {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  object-fit: contain;
+  object-fit: cover;
+  border: 2px solid #334155;
 }
 
 .TT {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: bold;
-  letter-spacing: 1px;
+  color: #f8fafc;
+}
+
+.BB {
+  background: #111827;
+  padding: 20px;
+  border-radius: 15px;
+  border: 1px solid #1e293b;
 }
 
 .boxx {
-  background-color: #222;
+  background: #555;
   border-radius: 10px;
-  align-items: center;
+}
+
+.in {
+  width: 90vw;
+  height: 5vw;
+}
+
+.I {
+  width: 77vw;
+  height: 5vw;
+}
+
+a {
+  color: #999;
+  text-decoration: none;
+}
+
+.wm {
   font-size: 13px;
-  margin-top: 10px;
 }
