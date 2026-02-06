@@ -110,7 +110,7 @@ async function loadChat() {
         const div = document.createElement("div");
         div.className = m.from_number === myNumber ? "msg me" : "msg other";
         
-        const sender = m.from_number === myNumber ? "Kamu" : (ownerMap[m.from_number] || m.from_number);
+        const sender = m.from_number === myNumber ? : (ownerMap[m.from_number] || m.from_number);
         div.innerHTML = `<small>${sender}: </small>${m.message}`;
         chatDiv.appendChild(div);
     });
