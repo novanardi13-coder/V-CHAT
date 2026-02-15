@@ -13,6 +13,69 @@
 <div class="nds">
   <img src="V-CHAT.png" alt="Logo" class="L1">
   <span class="TT">V-CHAT</span>
+  <h1 class="set" onclick="toggleSettings()">⚙️</h1>
+</div>
+
+<div id="settingsPanel" class="settings-panel">
+  <h3>⚙️ Pengaturan</h3>
+  
+  <p>Ukuran Font:</p>
+  <select id="fontSizeSelect" onchange="changeFontSize()">
+    <option value="small">Kecil</option>
+    <option value="normal" selected>Normal</option>
+    <option value="large">Besar</option>
+  </select>
+  
+  <p>Tema:</p>
+  <select id="themeSelect" onchange="changeTheme()">
+    <option value="dark" selected>Gelap</option>
+    <option value="light">Terang</option>
+  </select>
+  
+  <!-- FITUR 1: Notifikasi -->
+  <p>🔔 Notifikasi:</p>
+  <select id="notificationSelect" onchange="changeNotification()">
+    <option value="all">Semua Pesan</option>
+    <option value="mentions">Mention Saja</option>
+    <option value="off" selected>Mati</option>
+  </select>
+  
+  <!-- FITUR 2: Bahasa -->
+  <p>🌐 Bahasa:</p>
+  <select id="languageSelect" onchange="changeLanguage()">
+    <option value="id" selected>Indonesia</option>
+    <option value="en">English</option>
+    <option value="ar">العربية</option>
+  </select>
+  
+  <!-- FITUR 3: Enter untuk Kirim -->
+  <p>📱 Enter untuk Kirim:</p>
+  <select id="enterSendSelect" onchange="changeEnterSend()">
+    <option value="on" selected>Aktif</option>
+    <option value="off">Nonaktif</option>
+  </select>
+  
+  <!-- FITUR 4: Tampilkan Jam -->
+  <p>⏰ Tampilkan Jam:</p>
+  <select id="timeDisplaySelect" onchange="changeTimeDisplay()">
+    <option value="all">Semua Pesan</option>
+    <option value="latest">Pesan Terbaru</option>
+    <option value="off" selected>Mati</option>
+  </select>
+  
+  <!-- FITUR 5: Mode Hemat Data -->
+  <p>📶 Mode Hemat Data:</p>
+  <select id="dataSaverSelect" onchange="changeDataSaver()">
+    <option value="off" selected>Mati</option>
+    <option value="on">Aktif</option>
+  </select>
+  
+  <br><br>
+  
+  <!-- TOMBOL TAMBAHAN UNTUK RESET -->
+  <button onclick="resetSettings()" class="reset-btn">↺ Reset ke Default</button>
+  <br><br>
+  <button onclick="toggleSettings()" class="E">tutup❌</button>
 </div>
 
 <p>Nomor kamu: <b id="myNumber"></b></p>
