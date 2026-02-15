@@ -367,3 +367,121 @@ body.light-theme .reset-btn {
 body.light-theme .reset-btn:hover {
   background: #c82333;
 }
+
+/* ===== TUTUP CHAT BUTTON ===== */
+.close-chat-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-left: 10px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.close-chat-btn:hover {
+  background: #c82333;
+  transform: scale(1.05);
+}
+
+/* Container untuk header chat */
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+}
+
+.chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ===== STATUS ONLINE/OFFLINE ===== */
+.status-dot {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+  transition: all 0.3s ease;
+}
+
+.status-dot.online {
+  background-color: #4ade80;
+  box-shadow: 0 0 10px #4ade80;
+  animation: pulse 2s infinite;
+}
+
+.status-dot.offline {
+  background-color: #9ca3af;
+}
+
+.status-dot.away {
+  background-color: #fbbf24;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(74, 222, 128, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
+}
+
+#onlineStatus {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-tertiary);
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  margin-left: 10px;
+}
+
+#statusText {
+  color: var(--text-primary);
+  font-size: 12px;
+}
+
+/* Dark theme light theme compatibility */
+body.light-theme .status-dot.online {
+  background-color: #22c55e;
+  box-shadow: 0 0 10px #22c55e;
+}
+
+body.light-theme .status-dot.offline {
+  background-color: #6b7280;
+}
+
+body.light-theme #onlineStatus {
+  background: var(--bg-tertiary);
+}
+
+/* Animasi fade out untuk chat window */
+.chat-window-hide {
+  animation: fadeOut 0.3s ease forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+    display: none;
+  }
+}
