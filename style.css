@@ -181,3 +181,189 @@ a {
 .wm {
   font-size: 13px;
 }
+
+.set {
+  margin-left: 40vw;
+  font-size: 25px;
+}
+
+.settings-panel {
+  position: fixed;
+  top: 0;
+  right: -250px;
+  width: 110px;
+  background: #555;
+  color: white;
+  padding: 15px;
+  border-radius: 10px 0px 0px 10px;
+  text-align: left;
+  transition: 0.3s;
+  z-index: 1000;
+  font-size: 12px;
+}
+
+.settings-panel.active {
+  right: 0px;
+}
+
+/* Font Size Classes */
+body.small-font {
+  font-size: 12px;
+}
+
+body.normal-font {
+  font-size: 16px;
+}
+
+body.large-font {
+  font-size: 20px;
+}
+
+.E {
+  background: #999;
+  border: solid #555 1px;
+  text-align: center;
+  padding: 10px;
+  width: 30vw;
+  border-radius: 10px;
+}
+
+#messageInput {
+  width: 80vw;
+}
+
+/* ===== TAMBAHAN DARK THEME ===== */
+:root {
+    --bg-primary: #020617;
+    --bg-secondary: #0f172a;
+    --bg-tertiary: #1e293b;
+    --text-primary: #ffffff;
+    --text-secondary: #4ade80;
+    --border-color: #334155;
+    --button-gradient: linear-gradient(to bottom, white, silver);
+    --button-text: #000000;
+    --hover-color: lawngreen;
+}
+
+body.light-theme {
+    --bg-primary: #f0f2f5;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e4e6eb;
+    --text-primary: #050505;
+    --text-secondary: #1b74e4;
+    --border-color: #ced0d4;
+    --button-gradient: linear-gradient(to bottom, #e4e6eb, #b0b3b8);
+    --button-text: #050505;
+    --hover-color: #1b74e4;
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.light-theme .msg.other {
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+body.light-theme .msg.me {
+    background-color: #0084ff;
+    color: white;
+}
+
+body.light-theme .contact-item {
+    background: var(--bg-tertiary);
+    border-left-color: var(--text-secondary);
+}
+
+body.light-theme .contact-item:hover {
+    background: #d8dadf;
+}
+
+body.light-theme #chat {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+body.light-theme #chat-window {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+body.light-theme .BB {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+body.light-theme .settings-panel {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+body.light-theme input {
+    background: var(--bg-primary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+body.light-theme .B0,
+body.light-theme .B1,
+body.light-theme .B,
+body.light-theme .B2 {
+    background: var(--button-gradient);
+    color: var(--button-text);
+}
+
+body.light-theme .TT {
+    color: var(--text-primary);
+}
+
+body.light-theme .set {
+    color: var(--text-primary);
+}
+
+body.light-theme .E {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Override untuk elemen yang perlu penyesuaian */
+body.light-theme .nds {
+    background: transparent;
+}
+
+body.light-theme hr {
+    border-color: var(--border-color);
+}
+
+/* Tambahan untuk tombol reset */
+.reset-btn {
+  width: 100%;
+  padding: 10px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+.reset-btn:hover {
+  background: #ff6666;
+  transform: scale(1.02);
+}
+
+body.light-theme .reset-btn {
+  background: #dc3545;
+  color: white;
+}
+
+body.light-theme .reset-btn:hover {
+  background: #c82333;
+}
