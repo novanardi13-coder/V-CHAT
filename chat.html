@@ -99,8 +99,23 @@
 
 <hr>
 
+<!-- Tambahan untuk Online/Offline Status (hidden by default) -->
+<div id="onlineStatus" style="display: none;">
+  <span id="statusIndicator" class="status-dot offline"></span>
+  <span id="statusText">Offline</span>
+</div>
+
 <div id="chat-window" style="display:none;">
-    <p>Chatting dengan: <b id="chattingWith"></b></p>
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <p>Chatting dengan: <b id="chattingWith"></b></p>
+        <div id="onlineStatus" style="display: inline-flex;">
+          <span id="statusIndicator" class="status-dot offline"></span>
+          <span id="statusText">Offline</span>
+        </div>
+      </div>
+      <button class="close-chat-btn" onclick="closeChat()">✖ Tutup Chat</button>
+    </div>
     <div id="chat"></div>
     <input id="messageInput" placeholder="Pesan">
     <button onclick="sendMessage()" class="B2">Kirim</button>
