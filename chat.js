@@ -11,13 +11,32 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentTarget = null;
 let ownerMap = {};
+let onlineStatusMap = {};
 
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("myNumber")) document.getElementById("myNumber").innerText = myNumber;
     if (document.getElementById("myName")) document.getElementById("myName").innerText = myName;
     loadOwners();
     displaySavedContacts();
+    
+    // Setup initial online status for self
+    updateSelfStatus();
 });
+
+// Update self status every 30 seconds
+setInterval(updateSelfStatus, 30000);
+
+async function updateSelfStatus() {
+    try {
+        await db.from("user_status").upsert({
+            number: myNumber,
+            status: "online",
+            last_seen: new Date().toISOString()
+        }, { onConflict: 'number' });
+    } catch (error) {
+        console.error("Error updating self status:", error);
+    }
+}
 
 async function loadOwners() {
     const { data, error } = await db.from("numbers").select("number, owner");
@@ -55,7 +74,7 @@ function saveContact() {
     }
 }
 
-function displaySavedContacts() {
+async function displaySavedContacts() {
     const container = document.getElementById("myContacts");
     const daftarKontak = JSON.parse(localStorage.getItem("mySavedContacts")) || [];
 
@@ -65,17 +84,54 @@ function displaySavedContacts() {
     }
 
     container.innerHTML = "";
+    
+    // Ambil semua status untuk kontak
+    const { data: statusData } = await db
+        .from("user_status")
+        .select("*")
+        .in("number", daftarKontak);
+    
+    const statusMap = {};
+    if (statusData) {
+        statusData.forEach(s => {
+            statusMap[s.number] = s;
+        });
+    }
+    
     daftarKontak.forEach(nomor => {
         const div = document.createElement("div");
         div.className = "contact-item";
         
         const namaTampilan = ownerMap[nomor] ? `${ownerMap[nomor]} (${nomor})` : nomor;
         
-        div.innerHTML = `<b>👤 ${namaTampilan}</b>`;
+        // Cek status
+        let statusIcon = "⚪";
+        const status = statusMap[nomor];
+        
+        if (status) {
+            const lastSeen = new Date(status.last_seen);
+            const now = new Date();
+            const diffMinutes = Math.floor((now - lastSeen) / 60000);
+            
+            if (diffMinutes <= 5 && status.status === "online") {
+                statusIcon = "🟢";
+            } else {
+                statusIcon = "⚪";
+            }
+        }
+        
+        div.innerHTML = `<b>${statusIcon} 👤 ${namaTampilan}</b>`;
         div.onclick = () => startChat(nomor);
         container.appendChild(div);
     });
 }
+
+// Update contacts status every 30 seconds
+setInterval(() => {
+    if (!currentTarget) {
+        displaySavedContacts();
+    }
+}, 30000);
 
 function startChat(nomor) {
     currentTarget = nomor;
@@ -86,7 +142,71 @@ function startChat(nomor) {
     const label = document.getElementById("chattingWith");
     if (label) label.innerText = ownerMap[nomor] || nomor;
 
+    // Update online status
+    updateOnlineStatus(nomor);
+    
     loadChat();
+}
+
+async function updateOnlineStatus(nomor) {
+    if (!nomor) return;
+    
+    try {
+        // Ambil status target
+        const { data, error } = await db
+            .from("user_status")
+            .select("status, last_seen")
+            .eq("number", nomor)
+            .single();
+        
+        const statusDot = document.getElementById("statusIndicator");
+        const statusText = document.getElementById("statusText");
+        
+        if (data) {
+            const lastSeen = new Date(data.last_seen);
+            const now = new Date();
+            const diffMinutes = Math.floor((now - lastSeen) / 60000);
+            
+            // Jika last_seen lebih dari 5 menit, anggap offline
+            if (diffMinutes > 5) {
+                statusDot.className = "status-dot offline";
+                statusText.textContent = `Offline • ${diffMinutes} menit lalu`;
+            } else if (data.status === "online") {
+                statusDot.className = "status-dot online";
+                statusText.textContent = "Online";
+            } else {
+                statusDot.className = "status-dot offline";
+                statusText.textContent = `Offline • ${diffMinutes} menit lalu`;
+            }
+        } else {
+            statusDot.className = "status-dot offline";
+            statusText.textContent = "Offline";
+        }
+    } catch (error) {
+        console.error("Error update status:", error);
+    }
+}
+
+// Update status setiap 30 detik untuk target yang sedang dichat
+setInterval(() => {
+    if (currentTarget) {
+        updateOnlineStatus(currentTarget);
+    }
+}, 30000);
+
+function closeChat() {
+    const chatWin = document.getElementById("chat-window");
+    const onlineStatus = document.getElementById("onlineStatus");
+    
+    // Tambah animasi
+    chatWin.classList.add("chat-window-hide");
+    
+    setTimeout(() => {
+        chatWin.style.display = "none";
+        chatWin.classList.remove("chat-window-hide");
+        onlineStatus.style.display = "none";
+        currentTarget = null;
+    }, 300);
 }
 
 async function loadChat() {
@@ -103,15 +223,28 @@ async function loadChat() {
     const chatDiv = document.getElementById("chat");
     chatDiv.innerHTML = "";
 
-    data.filter(m =>
+    const timeSetting = localStorage.getItem("timeDisplay") || "off";
+    const filteredData = data.filter(m =>
         (m.from_number === myNumber && m.to_number === currentTarget) ||
         (m.from_number === currentTarget && m.to_number === myNumber)
-    ).forEach(m => {
+    );
+
+    filteredData.forEach((m, index) => {
         const div = document.createElement("div");
         div.className = m.from_number === myNumber ? "msg me" : "msg other";
         
         const sender = m.from_number === myNumber ? "" : (ownerMap[m.from_number] || m.from_number);
-        div.innerHTML = `<small>${sender} </small>${m.message}`;
+        let timeHtml = "";
+        
+        if (timeSetting === "all" || (timeSetting === "latest" && index === filteredData.length - 1)) {
+            const time = new Date(m.created_at).toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            timeHtml = `<small style="opacity:0.7; font-size:10px; display:block;">🕐 ${time}</small>`;
+        }
+        
+        div.innerHTML = `<small>${sender} </small>${m.message}${timeHtml}`;
         chatDiv.appendChild(div);
     });
 
@@ -139,17 +272,20 @@ async function sendMessage() {
 }
 
 function logout() {
-    localStorage.clear();
-    window.location.href = "index.html";
+    // Set status offline sebelum logout
+    db.from("user_status").upsert({
+        number: myNumber,
+        status: "offline",
+        last_seen: new Date().toISOString()
+    }, { onConflict: 'number' }).then(() => {
+        localStorage.clear();
+        window.location.href = "index.html";
+    });
 }
 
 function DN() {
     window.location.href = "DAFNOM.html";
 }
-
-setInterval(() => {
-    if (currentTarget) loadChat();
-}, 2000);
 
 function toggleSettings() {
   document.getElementById("settingsPanel")
@@ -185,23 +321,6 @@ function changeTheme() {
     localStorage.setItem("theme", theme);
 }
 
-// Update window.onload untuk menyertakan theme
-const originalOnload = window.onload;
-window.onload = function() {
-    // Panggil fungsi asli
-    if (originalOnload) originalOnload();
-    
-    // Tambahan untuk theme
-    const savedTheme = localStorage.getItem("theme") || "dark";
-    document.getElementById("themeSelect").value = savedTheme;
-    
-    if (savedTheme === "light") {
-        document.body.classList.add("light-theme");
-    } else {
-        document.body.classList.add("dark-theme");
-    }
-}
-
 // ===== 5 FITUR BARU DI PENGATURAN =====
 
 // FITUR 1: Notifikasi
@@ -223,7 +342,6 @@ function changeLanguage() {
     const lang = document.getElementById("languageSelect").value;
     localStorage.setItem("language", lang);
     
-    // Ganti teks berdasarkan bahasa
     const texts = {
         id: {
             myContacts: "Kontak Saya",
@@ -266,11 +384,9 @@ function changeEnterSend() {
     
     const messageInput = document.getElementById("messageInput");
     
-    // Hapus event listener lama
     const newInput = messageInput.cloneNode(true);
     messageInput.parentNode.replaceChild(newInput, messageInput);
     
-    // Tambah event listener baru
     if (enterSend === "on") {
         newInput.addEventListener("keypress", function(e) {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -289,54 +405,8 @@ function changeTimeDisplay() {
     const timeDisplay = document.getElementById("timeDisplaySelect").value;
     localStorage.setItem("timeDisplay", timeDisplay);
     
-    // Reload chat untuk menampilkan jam
     if (currentTarget) loadChat();
     console.log(`⏰ Tampilan jam: ${timeDisplay === 'all' ? 'Semua pesan' : timeDisplay === 'latest' ? 'Pesan terbaru' : 'Mati'}`);
-}
-
-// MODIFIKASI FUNGSI LOADCHAT untuk menampilkan jam
-const originalLoadChat = loadChat;
-loadChat = async function() {
-    if (!currentTarget) return;
-
-    const { data, error } = await db
-        .from("chats")
-        .select("*")
-        .or(`from_number.eq."${myNumber}",to_number.eq."${myNumber}"`)
-        .order("created_at", { ascending: true });
-
-    if (error) return;
-
-    const chatDiv = document.getElementById("chat");
-    chatDiv.innerHTML = "";
-
-    const timeSetting = localStorage.getItem("timeDisplay") || "off";
-    const filteredData = data.filter(m =>
-        (m.from_number === myNumber && m.to_number === currentTarget) ||
-        (m.from_number === currentTarget && m.to_number === myNumber)
-    );
-
-    filteredData.forEach((m, index) => {
-        const div = document.createElement("div");
-        div.className = m.from_number === myNumber ? "msg me" : "msg other";
-        
-        const sender = m.from_number === myNumber ? "" : (ownerMap[m.from_number] || m.from_number);
-        let timeHtml = "";
-        
-        // Tampilkan jam sesuai pengaturan
-        if (timeSetting === "all" || (timeSetting === "latest" && index === filteredData.length - 1)) {
-            const time = new Date(m.created_at).toLocaleTimeString('id-ID', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-            timeHtml = `<small style="opacity:0.7; font-size:10px; display:block;">🕐 ${time}</small>`;
-        }
-        
-        div.innerHTML = `<small>${sender} </small>${m.message}${timeHtml}`;
-        chatDiv.appendChild(div);
-    });
-
-    chatDiv.scrollTop = chatDiv.scrollHeight;
 }
 
 // FITUR 5: Mode Hemat Data
@@ -345,19 +415,16 @@ function changeDataSaver() {
     localStorage.setItem("dataSaver", dataSaver);
     
     if (dataSaver === "on") {
-        // Kurangi kualitas gambar, nonaktifkan animasi
         document.body.classList.add("data-saver");
-        // Hentikan auto-refresh jika terlalu boros
         if (window.chatInterval) {
             clearInterval(window.chatInterval);
             window.chatInterval = setInterval(() => {
                 if (currentTarget) loadChat();
-            }, 5000); // Lebih jarang (5 detik)
+            }, 5000);
         }
         console.log("📶 Mode Hemat Data: AKTIF");
     } else {
         document.body.classList.remove("data-saver");
-        // Kembalikan ke interval normal
         if (window.chatInterval) {
             clearInterval(window.chatInterval);
             window.chatInterval = setInterval(() => {
@@ -371,7 +438,6 @@ function changeDataSaver() {
 // FITUR BONUS: Reset semua pengaturan
 function resetSettings() {
     if (confirm("Reset semua pengaturan ke default?")) {
-        // Hapus semua settings dari localStorage
         localStorage.removeItem("fontSize");
         localStorage.removeItem("theme");
         localStorage.removeItem("notification");
@@ -380,16 +446,21 @@ function resetSettings() {
         localStorage.removeItem("timeDisplay");
         localStorage.removeItem("dataSaver");
         
-        // Reset ke default
         location.reload();
     }
 }
 
-// UPDATE FUNGSI WINDOW.ONLOAD
-const originalWindowOnload = window.onload;
+// Update status saat user akan keluar
+window.addEventListener("beforeunload", () => {
+    db.from("user_status").upsert({
+        number: myNumber,
+        status: "offline",
+        last_seen: new Date().toISOString()
+    }, { onConflict: 'number' });
+});
+
+// ===== SATU WINDOW.ONLOAD UNTUK SEMUA =====
 window.onload = function() {
-    if (originalWindowOnload) originalWindowOnload();
-    
     // Load semua pengaturan
     const settings = {
         fontSize: localStorage.getItem("fontSize") || "normal",
@@ -401,48 +472,60 @@ window.onload = function() {
         dataSaver: localStorage.getItem("dataSaver") || "off"
     };
     
-    // Apply semua settings
-    document.getElementById("fontSizeSelect").value = settings.fontSize;
-    document.getElementById("themeSelect").value = settings.theme;
-    document.getElementById("notificationSelect").value = settings.notification;
-    document.getElementById("languageSelect").value = settings.language;
-    document.getElementById("enterSendSelect").value = settings.enterSend;
-    document.getElementById("timeDisplaySelect").value = settings.timeDisplay;
-    document.getElementById("dataSaverSelect").value = settings.dataSaver;
+    // Apply font size
+    document.body.classList.add(settings.fontSize + "-font");
+    if (document.getElementById("fontSizeSelect")) {
+        document.getElementById("fontSizeSelect").value = settings.fontSize;
+    }
     
     // Apply theme
+    if (document.getElementById("themeSelect")) {
+        document.getElementById("themeSelect").value = settings.theme;
+    }
     if (settings.theme === "light") {
         document.body.classList.add("light-theme");
     }
     
-    // Apply font size
-    document.body.classList.add(settings.fontSize + "-font");
-    
-    // Apply enter send
-    if (settings.enterSend === "on") {
-        document.getElementById("messageInput").addEventListener("keypress", function(e) {
-            if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
+    // Apply notification
+    if (document.getElementById("notificationSelect")) {
+        document.getElementById("notificationSelect").value = settings.notification;
     }
     
     // Apply language
+    if (document.getElementById("languageSelect")) {
+        document.getElementById("languageSelect").value = settings.language;
+    }
     changeLanguage();
     
-    // Setup chat interval dengan mempertimbangkan data saver
+    // Apply enter send
+    if (document.getElementById("enterSendSelect")) {
+        document.getElementById("enterSendSelect").value = settings.enterSend;
+    }
+    if (settings.enterSend === "on") {
+        const messageInput = document.getElementById("messageInput");
+        if (messageInput) {
+            messageInput.addEventListener("keypress", function(e) {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        }
+    }
+    
+    // Apply time display
+    if (document.getElementById("timeDisplaySelect")) {
+        document.getElementById("timeDisplaySelect").value = settings.timeDisplay;
+    }
+    
+    // Apply data saver
+    if (document.getElementById("dataSaverSelect")) {
+        document.getElementById("dataSaverSelect").value = settings.dataSaver;
+    }
+    
+    // Setup chat interval
     const intervalTime = settings.dataSaver === "on" ? 5000 : 2000;
     window.chatInterval = setInterval(() => {
         if (currentTarget) loadChat();
     }, intervalTime);
-}
-
-window.onload = function() {
-  const savedSize = localStorage.getItem("fontSize");
-
-  if (savedSize) {
-    document.body.classList.add(savedSize + "-font");
-    document.getElementById("fontSizeSelect").value = savedSize;
-  }
 }
