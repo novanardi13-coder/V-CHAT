@@ -1,0 +1,21 @@
+{
+  "name": "V-CHAT - Aplikasi Chat Cepat",
+  "short_name": "VChat",
+  "description": "Aplikasi chat ringan dengan pesan teks, gambar, video, dan notifikasi realtime.",
+  "id": "V-CHAT-by-Vanzzcode",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a1a2e",
+  "theme_color": "#16213e",
+  "categories": ["social", "communication"],
+  "icons": [
+    {
+      "src": "V-CHAT.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
